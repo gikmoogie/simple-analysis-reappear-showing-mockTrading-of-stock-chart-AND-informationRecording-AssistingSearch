@@ -1,5 +1,5 @@
-# A simple analysis of the browser stock chart
-# 浏览器股票图表简单分析
+# A simple-analysis-reappear-showing-mockTrading-of-stock-chart-AND-informationRecording-AssistingSearch-tool-in-browser
+# 一个浏览器股票图表简单-分析-重现-模拟交易以及信息记录-辅助搜索的工具
 
 A simple A-share stock chart display and analysis tool, with note-taking and keyword quick search, built with a local Python backend and web frontend.
 一个简单的A股股票图表展示和简单分析，以及记录笔记和关键字快捷搜索的，本地Python后端和Web前端的案例。
