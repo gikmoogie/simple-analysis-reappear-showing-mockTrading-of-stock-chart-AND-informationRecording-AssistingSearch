@@ -1,0 +1,181 @@
+<!-- // author: moogiegik -->
+<html>
+  <head>
+    <title>chart</title>
+    <link rel="icon" href="{{ url_for('static', filename='A simple analysis of the browser stock chart icon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chart.css') }}">
+    <link rel="js" href="{{ url_for('static', filename='css/chart.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+  </head>
+  <!-- <body onload="resizeObserverOfMainchart()"> -->
+  <body>
+    <div class="TopContainer">
+      <div class="left">
+        <!-- <canvas id="Mainchart" width="500" height="300"></canvas> -->
+        <canvas id="Mainchart"></canvas>
+        <div id="DateChart" style="display: flex;">
+          <p id="startDate" style="flex: 0.1;text-align: left;"></p>
+          <p id="ontime" style="flex: 1;text-align: center;"></p>
+          <p id="endDate" style="flex: 1;text-align: right;padding-right: 2px;"></p>
+          <!-- <div id="widthLevel" style="flex: 0.5;text-align: center;display: flex;align-items: center;">
+            <button onclick="zoomChange(-5)" style="width: 25%;font-size: 100%;padding: 0;">-</button>
+            <p style="background: white;border: 1px solid white;">15</p>
+            <button onclick="zoomChange(5)" style="width: 25%;font-size: 100%;padding: 0;">+</button>
+          </div> -->
+        </div>
+        <canvas id="SUBchart"></canvas>
+        <div id="CrossInfo"></div>
+      </div>
+      <div class="right">
+        <!-- 日期第一行 -->
+        <div id="dateFromContiner" class = "rightDiv">
+            <p id="from1" class="width20p">25.1</p>
+            <p id="from2" class="width20p" style="background: white;color: black">24.6</p>
+            <p id="from3" class="width20p">24.1</p>
+            <p id="from4" class="width20p">23.6</p>
+            <p id="from5" class="width20p">23.1</p>
+        <!-- 日期第二行 -->
+            <!-- <p id="from6" class="width20p">22.6</p>
+            <p id="from7" class="width20p">22.1</p>
+            <p id="from8" class="width20p">21.6</p>
+            <p id="from9" class="width20p">21.1</p>
+            <p id="from10" class="width20p">20.6</p> -->
+            <!-- <p id="from10" class="flexOne" style="text-align: right;">20.6</p> -->
+        </div>
+        <!-- 五分钟和复盘复选项 日周选择 -->
+        <div class="tradeInfoContainer" style="padding-top:0;"> 
+          <div class = "rightDiv">
+            <div class="flexOne" style="border: 0;">
+                <input type="checkbox" id="fiveChartCheckbox" unchecked>
+                <label for="fiveChartCheckbox">五分钟</label><br>            
+            </div>
+            <div class="flexOne" style="border: 0;">
+              <input id="reviewModleCheckbox" type="checkbox" unchecked>
+              <label for="reviewModleCheckbox">复盘</label><br>            
+            </div>
+
+          </div>     
+          <div class = "rightDiv" id="dayWeekContiner">
+            <!-- <p id="dayModel" class="flexOne" style="background: white;color: black">日K</p>
+            <p id="weekModel" class="flexOne">周K</p> -->
+          </div>
+          <!-- code refresh -->
+          <div style="display: flex;">
+            <input id="codeShort" type="number" placeholder="300308"  value="300308" style="font-size: 1vw;width: 78%;padding: 0;padding-left: 1%;border: 1px solid white;border-radius: 5px;">
+            <p id="refreshBtn" onclick="SUBctx.clearRect(0,0,SUBcanvas.width,SUBcanvas.height);MinsLinectx.clearRect(0,0,MinsLinecanvas.width,MinsLinecanvas.height);getSoketData()" style="margin-left: 2%; width: 50%;text-align: center;border: 1px solid aqua;color: aqua;border-radius: 5px;">刷新</p>
+          </div>
+          <!-- name price changRate -->
+          <p id="pointDate" class="overflow" style="color: white;font-size: large;display: inline-block;width: 45%;font-size: 100%;margin-top: 5px;">--/--/--</p>
+          <p id="name" class="overflow" style="display: inline-block;width: 45%;font-size: 100%;margin-top: 5px;">--</p>
+          <div style="width: 100%;display: flex;align-items: flex-end;">
+            <p id="pointPrice" style="font-size: 1.8vw;width: 50%;">0.00</p>          
+            <p id="pointPriceChange" style="font-size: 1.3vw;width: 50%;">0.00%</p>
+          </div>
+        </div>
+
+        <!-- buy --><!-- sale -->
+        <div class="tradeInfoContainer">
+          <!-- buy -->
+          <div class = "rightDiv">
+            <input id="WillBuy" style="width: 49%;border: 1px solid white;" placeholder="0"></input>
+            <button onclick="allIn(1)" style="width: 15%;font-size: 80%;">半</button>
+            <button onclick="Plus100x(1,-1)" style="width: 12%;font-size: 110%;">-</button>
+            <button onclick="Plus100x(1,1)" style="width: 12%;font-size: 110%;">+</button>
+            <button onclick="Plus100x(1,10)" style="width: 12%;font-size: 90%;">x</button>
+          </div>
+          <div class="rightDiv">
+            <button id="clcBuy" onclick="ToBuy()" style="width: 50%;color: red;">买</button>
+            <!-- sale -->                 
+            <button id="clcSale" onclick="ToSale()" style="width: 50%;color: green;">卖</button>
+          </div>
+
+          <div class = "rightDiv">
+            <input id="WillSale" style="width: 49%;border: 1px solid white;" placeholder="0"></input>
+            <button onclick="allIn(2)" style="width: 15%;font-size: 80%;">半</button>
+            <button onclick="Plus100x(2,-1)" style="width: 12%;font-size: 110%;">-</button>
+            <button onclick="Plus100x(2,1)" style="width: 12%;font-size: 110%;">+</button>
+            <button onclick="Plus100x(2,10)" style="width: 12%;font-size: 90%;">x</button>
+          </div>
+          <div class="tradeInfoContainer">
+            <p id="MoneyNeed">金额：--</p>     
+          </div>
+        </div>
+
+        <!-- nextDay next5Min -->
+        <div style="display: flex;margin-top: 5px;"class="tradeInfoContainer">
+            <p id="ToltalProfit" style="display: flex;width: 60%;font-size: 1.5vw; text-align: left;align-items: center;">0.00%</p>
+          <div style="width: 40%;">
+            <button id="btn_nextDay" onclick="nextDay(60)" style="width: 100%;marging-bottom: 5px;">下一天</button>
+            <button id="btn_nextFive" onclick="nextDay(1)" style="width: 100%;">下五分</button>
+          </div>
+        </div>
+        <!-- trade info -->
+        <div class="tradeInfoContainer">
+          <div>
+            <p id="TodayProfitMoney">当日盈亏：--</p>
+            <p id="AveragePrice">平均成本：--</p>
+            <p id="ToltalProfitMoney">总盈亏：--<br>总盈亏%：--</p>
+            <p id="UnlockedNum">流动数量：--</p>
+            <p id="LockedNum">锁定数量：--</p>                                
+            <p id="ToltalCapitalisation">总市值：--</p>
+            <p id="ToltalValue">总资产：--</p>           
+            <p id="UseableMoney">可用金额：--</p>
+            <input type="number" id="changeUseableMoney" style="width: 70%;border: 1px solid white;font-size: 100%;" placeholder="0" value="10000">
+            <button style="width: 25%;" onclick="changeOnUseableMoney(0,true)">充值</button></input>
+            <p id="WinRate">胜率：0%</p>
+            <p>佣金：0.0005%</p>
+          </div>
+        </div>
+        <div class="tradeInfoContainer">
+          <!-- //VOLUME,drawAverageLine,IVCD,BBI,BTX,BIAS_QL,NKD,RSIS,OPENVOL,CAT/TST
+               //0         1             2     3   4   5       6   7，   8     9-->
+          <div class = "rightDiv">
+            <p id="sub1" class="flexOne" onclick="IndexSwitch(0,this)">VOL</p>
+            <p id="sub2" class="flexOne" onclick="IndexSwitch(1,this)" style="background: white;color: black;">AVG</p>
+            <p id="sub3" class="flexOne" onclick="IndexSwitch(2,this)" style="background: white;color: black;">I_V</p>
+            <p id="sub4" class="flexOne" onclick="IndexSwitch(3,this)" style="background: white;color: black;">BBI</p>
+            <p id="sub5" class="flexOne" onclick="IndexSwitch(4,this)">BTX</p>
+          </div>
+          <div class = "rightDiv">
+            <p class="flexOne" onclick="IndexSwitch(5,this)" style="background: white;color: black;">B_L</p>
+            <p class="flexOne" onclick="IndexSwitch(6,this)">KDJ</p>
+            <p class="flexOne" onclick="IndexSwitch(7,this)">RSI</p>
+            <p class="flexOne" onclick="IndexSwitch(8,this)">XZC</p>
+            <!-- <p class="flexOne" onclick="IndexSwitch(9,this)">CAT</p> -->
+            <p class="flexOne" onclick="IndexSwitch(9,this)">PRE</p>
+          </div>
+          <div class = "rightDiv">
+            <p class="flexOne" onclick="IndexSwitch(10,this)" style="background: white;color: black;">YYX</p>
+            <p class="flexOne" onclick="IndexSwitch(11,this)">UN</p>
+            <p class="flexOne" onclick="IndexSwitch(12,this)">UN</p>
+            <p class="flexOne" onclick="IndexSwitch(13,this)">UN</p>
+            <!-- <p class="flexOne" onclick="IndexSwitch(9,this)">CAT</p> -->
+            <p class="flexOne" onclick="IndexSwitch(14,this)">UN</p>
+          </div>
+        </div>
+        <div class="tradeInfoContainer">
+          <!-- //VOLUME,  drawAverageLine,IVCD,BBI,   BTX,BIAS_QL,NKD,    RSIS,OPENVOL,PRE,TST
+                //0           1             2     3      4   5       6       7，   8     9  10 -->
+          <div class = "rightDiv">
+            <p class="flexOne" onclick="">AVG</p>
+            <p class="flexOne" onclick="">NBL</p>
+            <p class="flexOne" onclick="">ONT</p>
+          </div>
+            <p class="flexOne" onclick="clearMChart()">CLR</p>
+            <p id="local_ip" class="flexOne" style="user-select:all;word-wrap: break-word;" onclick="exploreSimpleReqest('IP',null)">GET WBSITE</p>
+        </div>
+      </div>
+      <div class="filter">
+            <canvas id="MASKchart"></canvas>
+            <canvas id="Minschart"></canvas>
+      </div>
+    </div>
+    <!-- <div id="showMainchartSize"></div> -->
+  </body>
+
+<script src="{{ url_for('static', filename='js/chart.js') }}" defer></script>
+<script></script>
+</html>
+
