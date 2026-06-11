@@ -117,6 +117,7 @@ After running, open your browser and visit: http://127.0.0.1:5005 to access the 
 ### CHART页面
 
 ![CHART](static/screenshots/chartTrade.JPG)
+![CHART](static/screenshots/chartTrade2.JPG)
 
 ### Ranking Page
 ### 排行页面
