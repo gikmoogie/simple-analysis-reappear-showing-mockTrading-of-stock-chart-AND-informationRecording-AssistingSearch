@@ -56,8 +56,8 @@ def exploreSimpleReqest():
 @app.route("/chart")
 def chart():
     return render_template("chart.html")
-@app.route('/getSoketData', methods=['POST'])
-def getSoketKData():
+@app.route('/getStockData', methods=['POST'])
+def getStockKData():
     json = request.get_json()
     try:
         app.logger.info(json)
@@ -71,8 +71,8 @@ def getSoketKData():
         # return jsonify(manager.download_And_Get_Data(json.get("code"),json.get("fromDate"),json.get("type")))
     except ValueError:
         return jsonify({'error': 'Invalid input. Please provide a valid number.'}), 400
-@app.route('/getSoketTempIV', methods=['POST'])
-def getSoketTempIV():
+@app.route('/getStockTempIV', methods=['POST'])
+def getStockTempIV():
     json = request.get_json()
     try:
         app.logger.info(json)
@@ -139,8 +139,8 @@ def infoSimpleReqest():
 # def chart():
 #     return render_template("GIK No1.html")
 
-# @app.route('/getSoketKData', methods=['POST'])
-# def getSoketKData():
+# @app.route('/getStockKData', methods=['POST'])
+# def getStockKData():
 #     json = request.get_json()
 #     try:
 #         app.logger.info(json)
@@ -149,8 +149,8 @@ def infoSimpleReqest():
 #     except ValueError:
 #         return jsonify({'error': 'Invalid input. Please provide a valid number.'}), 400
 
-# @app.route('/getSoketK5Data', methods=['POST'])
-# def getSoketK5Data():
+# @app.route('/getStockK5Data', methods=['POST'])
+# def getStockK5Data():
 #     json = request.get_json()
 #     try:
 #         app.logger.info(json)
