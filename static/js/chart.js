@@ -421,7 +421,7 @@ MASKcanvas.addEventListener('touchcancel', () => {
     if (event.key === 'p') {
       SUBctx.clearRect(0,0,SUBcanvas.width,SUBcanvas.height);
       MinsLinectx.clearRect(0,0,MinsLinecanvas.width,MinsLinecanvas.height);
-      getSoketData()
+      getStockData()
     }
     if (event.key === 'y' || event.key === 'a') {
       select__ = select__y
@@ -764,7 +764,7 @@ function generateVisablelData(){
     }
     // 8,peTTM, 9,pbMRQ, 10,psTTM, 11,pcfNcfTTM, 12,isST, 13,preclose")
     // console.log("fiveMinsLine data[1].length,data",data[1].length,data)
-    console.log("getSoketTempIV----------------------")
+    console.log("getStockTempIV----------------------")
   }
   // console.log("MINdata",MINdata,"Kdata",Kdata,"IVdata",IVdata)
   // console.log("responseLocal[1][0]",responseLocal[1][0],"responseLocal[1][1]",responseLocal[1][1])
@@ -1313,7 +1313,7 @@ function nextFive(){
       currentOffsetX++;
       pointDate.textContent = responseLocal.Kdata[currentOffsetX-1][0]
     }
-    getSoketData_Five()
+    getStockData_Five()
   }
   else{
     if(currentOffsetXFive>47){
@@ -1837,22 +1837,22 @@ function fiveMinsLine(dataRaw,index,cutoutt=true){
 
   if(subEndIndex<48){
     data2.unshift(dataRaw[0])
-    console.log("getSoketTempIV","subEndIndex",subEndIndex,"++++++++++++++++++++++")
+    console.log("getStockTempIV","subEndIndex",subEndIndex,"++++++++++++++++++++++")
     $.ajax({
-      url: '/getSoketTempIV',
+      url: '/getStockTempIV',
       method: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({"data":[data2],"type":dayWeekChoice}),  // 打包为JSON格式
       success: function(response) {
         // console.log("response",response)
         TempIv = response
-        // console.log("getSoketTempIV  TempIv[0]",TempIv[0])
+        // console.log("getStockTempIV  TempIv[0]",TempIv[0])
         // console.log(TempIv);
         // draw
         refreshDraw(IndexsSwitch);
       },
       error: function(error) {
-          console.log("getSoketTempIV wrong",error)
+          console.log("getStockTempIV wrong",error)
           TempIv = []
       }
     });
@@ -4489,14 +4489,14 @@ function initTradeZero(){
 // _____server get data_____________________________________________________________________________
 {
 // unkonwn    FUNCTION
-function getSoketData_Five_ForDraw(date,kdataItem,count){
+function getStockData_Five_ForDraw(date,kdataItem,count){
 // console.log(responseLocal.code,currentOffsetX-1,responseLocal.Kdata[currentOffsetX-1][0])
 var data ={
       "codeShort":responseLocal.code,
       "dateOn":date
     }
 $.ajax({
-    url: '/getSoketK5Data',
+    url: '/getStockK5Data',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(data),  // 打包为JSON格式
@@ -4512,21 +4512,21 @@ $.ajax({
   });
 }
 // get five data    FUNCTION
-function getSoketData_Five(){
+function getStockData_Five(){
 // console.log(responseLocal.code,currentOffsetX-1,responseLocal.Kdata[currentOffsetX-1][0])
 var data ={
       "codeShort":responseLocal.code,
       "dateOn":responseLocal.Kdata[currentOffsetX-1][0]
     }
 $.ajax({
-    url: '/getSoketK5Data',
+    url: '/getStockK5Data',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(data),  // 打包为JSON格式
     success: function(response) {
       console.log(response)
       responseFiveCopy = response
-      console.log("getSoketData_Five",responseFiveCopy)
+      console.log("getStockData_Five",responseFiveCopy)
       currentOffsetXFive = 0
       document.getElementById("btn_nextFive").style.background = "#F0F0F0"
       nextFive()
@@ -4537,7 +4537,7 @@ $.ajax({
   });
 }
 // get day data    FUNCTION  fixed
-function getSoketData(){
+function getStockData(){
   refreshBtn.style.border =  "1px solid rgb(214, 92, 21)"
   refreshBtn.style.color =  "rgb(214, 92, 21)"
   refreshBtn.onclick = null;
@@ -4545,14 +4545,14 @@ function getSoketData(){
   responseLocal = []
   VisibleData = []
 $.ajax({
-    url: '/getSoketData',
+    url: '/getStockData',
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify({"code":codeShort.value,"fromDate":dateFromChoice,"type":dayWeekChoice}),  // 打包为JSON格式
     success: function(response) {
       refreshBtn.style.border =  "1px solid aqua"
       refreshBtn.style.color =  "aqua"
-      refreshBtn.onclick = getSoketData;
+      refreshBtn.onclick = getStockData;
 
       console.log("response",response)
       responseLocal = response
@@ -4624,7 +4624,7 @@ $.ajax({
 
       changeOnUseableMoney(0,true)
 
-      PrintLimitPositionVariables("getSoketData")
+      PrintLimitPositionVariables("getStockData")
       // refreshDraw()
       selectrefreshDraw(select__,1,"green")
       limitPriceSale()
@@ -4632,9 +4632,9 @@ $.ajax({
     error: function(error) {
         refreshBtn.style.border =  "1px solid aqua"
         refreshBtn.style.color =  "aqua"
-        refreshBtn.onclick = getSoketData;
+        refreshBtn.onclick = getStockData;
         // $('#result').text('Error:', error);
-        console.log("getSoketData wrong",error)
+        console.log("getStockData wrong",error)
     }
   });
 }
@@ -4684,7 +4684,7 @@ socket.on('server_response', function(data) {
       codeShort.value = message[1][0]
       // console.log(message[1][0])
       codeShort.type = "number"
-      getSoketData()
+      getStockData()
     }
 });
 
@@ -4796,12 +4796,12 @@ window.onload = function() {
       PrintLimitPositionVariables("init",true)
 
       selectrefreshDraw(select__,1,"green")
-      // getSoketData()
+      // getStockData()
     }
   });
   // 监听该元素
   resizeObserver.observe(Mainchart);
-  getSoketData()
+  getStockData()
 
 }
 
